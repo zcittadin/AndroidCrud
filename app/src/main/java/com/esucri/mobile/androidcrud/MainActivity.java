@@ -45,10 +45,12 @@ public class MainActivity extends AppCompatActivity {
             findViewById(R.id.fab).setVisibility(View.INVISIBLE);
             clienteEditado = (Cliente) intent.getSerializableExtra("cliente");
             EditText txtNome = (EditText)findViewById(R.id.txtNome);
+            EditText txtIdade = (EditText)findViewById(R.id.txtIdade);
             Spinner spnEstado = (Spinner)findViewById(R.id.spnEstado);
             CheckBox chkVip = (CheckBox)findViewById(R.id.chkVip);
 
             txtNome.setText(clienteEditado.getNome());
+            txtIdade.setText(clienteEditado.getIdade().toString());
             chkVip.setChecked(clienteEditado.getVip());
             spnEstado.setSelection(getIndex(spnEstado, clienteEditado.getUf()));
             if(clienteEditado.getSexo() != null){
@@ -59,6 +61,20 @@ public class MainActivity extends AppCompatActivity {
                     rb = (RadioButton)findViewById(R.id.rbFeminino);
                 rb.setChecked(true);
             }
+        } else {
+            clienteEditado = null;
+            EditText txtNome = (EditText)findViewById(R.id.txtNome);
+            EditText txtIdade = (EditText)findViewById(R.id.txtIdade);
+            Spinner spnEstado = (Spinner)findViewById(R.id.spnEstado);
+            CheckBox chkVip = (CheckBox)findViewById(R.id.chkVip);
+            RadioButton rb = (RadioButton)findViewById(R.id.rbMasculino);
+
+            txtNome.setText("");
+            txtIdade.setText("");
+            chkVip.setChecked(false);
+            spnEstado.setSelection(1);
+            rb.setChecked(true);
+
         }
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -78,6 +94,21 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.includemain).setVisibility(View.VISIBLE);
                 findViewById(R.id.includecadastro).setVisibility(View.INVISIBLE);
                 findViewById(R.id.fab).setVisibility(View.VISIBLE);
+                EditText txtNome = (EditText)findViewById(R.id.txtNome);
+                EditText txtIdade = (EditText)findViewById(R.id.txtIdade);
+                Spinner spnEstado = (Spinner)findViewById(R.id.spnEstado);
+                CheckBox chkVip = (CheckBox)findViewById(R.id.chkVip);
+                RadioButton rb = (RadioButton)findViewById(R.id.rbMasculino);
+
+                txtNome.setText("");
+                txtIdade.setText("");
+                chkVip.setChecked(false);
+                spnEstado.setSelection(1);
+                rb.setChecked(true);
+                Intent intent = getIntent();
+                if(intent.hasExtra("cliente")){
+                    intent.removeExtra("cliente");
+                }
             }
         });
 
@@ -87,12 +118,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //carregando os campos
                 EditText txtNome = (EditText)findViewById(R.id.txtNome);
+                EditText txtIdade = (EditText)findViewById(R.id.txtIdade);
                 Spinner spnEstado = (Spinner)findViewById(R.id.spnEstado);
                 RadioGroup rgSexo = (RadioGroup)findViewById(R.id.rgSexo);
                 CheckBox chkVip = (CheckBox)findViewById(R.id.chkVip);
 
                 //pegando os valores
                 String nome = txtNome.getText().toString();
+                Integer idade = new Integer(String.valueOf(txtIdade.getText()));
                 String uf = spnEstado.getSelectedItem().toString();
                 boolean vip = chkVip.isChecked();
                 String sexo = rgSexo.getCheckedRadioButtonId() == R.id.rbMasculino ? "M" : "F";
@@ -101,9 +134,9 @@ public class MainActivity extends AppCompatActivity {
                 ClienteDAO dao = new ClienteDAO(getBaseContext());
                 boolean sucesso;
                 if(clienteEditado != null)
-                    sucesso = dao.salvar(clienteEditado.getId(), nome, sexo, uf, vip);
+                    sucesso = dao.salvar(clienteEditado.getId(), nome, idade, sexo, uf, vip);
                 else
-                    sucesso = dao.salvar(nome, sexo, uf, vip);
+                    sucesso = dao.salvar(nome, idade, sexo, uf, vip);
 
                 if(sucesso) {
                     Cliente cliente = dao.retornarUltimo();
@@ -114,17 +147,18 @@ public class MainActivity extends AppCompatActivity {
                         adapter.adicionarCliente(cliente);
 
                     txtNome.setText("");
+                    txtIdade.setText("");
                     rgSexo.setSelected(false);
                     spnEstado.setSelection(0);
                     chkVip.setChecked(false);
 
-                    Snackbar.make(view, "Salvou!", Snackbar.LENGTH_LONG)
+                    Snackbar.make(view, "Cliente salvo com sucesso.", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                     findViewById(R.id.includemain).setVisibility(View.VISIBLE);
                     findViewById(R.id.includecadastro).setVisibility(View.INVISIBLE);
                     findViewById(R.id.fab).setVisibility(View.VISIBLE);
                 }else{
-                    Snackbar.make(view, "Erro ao salvar, consulte os logs!", Snackbar.LENGTH_LONG)
+                    Snackbar.make(view, "Erro ao salvar o cliente!", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
             }

@@ -16,13 +16,14 @@ public class ClienteDAO {
         gw = DbGateway.getInstance(ctx);
     }
 
-    public boolean salvar(String nome, String sexo, String uf, boolean vip){
-        return salvar(0, nome, sexo, uf, vip);
+    public boolean salvar(String nome, Integer idade, String sexo, String uf, boolean vip){
+        return salvar(0, nome, idade, sexo, uf, vip);
     }
 
-    public boolean salvar(int id, String nome, String sexo, String uf, boolean vip){
+    public boolean salvar(int id, String nome, Integer idade, String sexo, String uf, boolean vip){
         ContentValues cv = new ContentValues();
         cv.put("Nome", nome);
+        cv.put("Idade", idade);
         cv.put("Sexo", sexo);
         cv.put("UF", uf);
         cv.put("Vip", vip ? 1 : 0);
@@ -38,10 +39,11 @@ public class ClienteDAO {
         while(cursor.moveToNext()){
             int id = cursor.getInt(cursor.getColumnIndex("ID"));
             String nome = cursor.getString(cursor.getColumnIndex("Nome"));
+            Integer idade = cursor.getInt(cursor.getColumnIndex("Idade"));
             String sexo = cursor.getString(cursor.getColumnIndex("Sexo"));
             String uf = cursor.getString(cursor.getColumnIndex("UF"));
             boolean vip = cursor.getInt(cursor.getColumnIndex("Vip")) > 0;
-            clientes.add(new Cliente(id, nome, sexo, uf, vip));
+            clientes.add(new Cliente(id, nome, idade, sexo, uf, vip));
         }
         cursor.close();
         return clientes;
@@ -52,11 +54,12 @@ public class ClienteDAO {
         if(cursor.moveToFirst()){
             int id = cursor.getInt(cursor.getColumnIndex("ID"));
             String nome = cursor.getString(cursor.getColumnIndex("Nome"));
+            Integer idade = cursor.getInt(cursor.getColumnIndex("Idade"));
             String sexo = cursor.getString(cursor.getColumnIndex("Sexo"));
             String uf = cursor.getString(cursor.getColumnIndex("UF"));
             boolean vip = cursor.getInt(cursor.getColumnIndex("Vip")) > 0;
             cursor.close();
-            return new Cliente(id, nome, sexo, uf, vip);
+            return new Cliente(id, nome, idade, sexo, uf, vip);
         }
         return null;
     }
