@@ -60,11 +60,11 @@ public class ClienteAdapter extends RecyclerView.Adapter<ClienteHolder> {
                             public void onClick(DialogInterface dialog, int which) {
                                 ClienteDAO dao = new ClienteDAO(view.getContext());
                                 boolean sucesso = dao.excluir(cliente.getId());
-                                if(sucesso) {
+                                if (sucesso) {
                                     removerCliente(cliente);
                                     Snackbar.make(view, "Excluido com sucesso!", Snackbar.LENGTH_LONG)
                                             .setAction("Action", null).show();
-                                }else{
+                                } else {
                                     Snackbar.make(view, "Erro ao tentar excluir o cliente!", Snackbar.LENGTH_LONG)
                                             .setAction("Action", null).show();
                                 }
@@ -82,12 +82,12 @@ public class ClienteAdapter extends RecyclerView.Adapter<ClienteHolder> {
         return clientes != null ? clientes.size() : 0;
     }
 
-    public void adicionarCliente(Cliente cliente){
+    public void adicionarCliente(Cliente cliente) {
         clientes.add(cliente);
         notifyItemInserted(getItemCount());
     }
 
-    public void atualizarCliente(Cliente cliente){
+    public void atualizarCliente(Cliente cliente) {
         clientes.set(clientes.indexOf(cliente), cliente);
         notifyItemChanged(clientes.indexOf(cliente));
     }
@@ -96,14 +96,14 @@ public class ClienteAdapter extends RecyclerView.Adapter<ClienteHolder> {
         Context context = view.getContext();
         while (context instanceof ContextWrapper) {
             if (context instanceof Activity) {
-                return (Activity)context;
+                return (Activity) context;
             }
-            context = ((ContextWrapper)context).getBaseContext();
+            context = ((ContextWrapper) context).getBaseContext();
         }
         return null;
     }
 
-    public void removerCliente(Cliente cliente){
+    public void removerCliente(Cliente cliente) {
         int position = clientes.indexOf(cliente);
         clientes.remove(position);
         notifyItemRemoved(position);

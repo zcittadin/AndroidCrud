@@ -10,33 +10,33 @@ import java.util.List;
 public class ClienteDAO {
 
     private final String TABLE_CLIENTES = "Clientes";
-    private DbGateway gw;
+    private DatabaseConnection gw;
 
-    public ClienteDAO(Context ctx){
-        gw = DbGateway.getInstance(ctx);
+    public ClienteDAO(Context ctx) {
+        gw = DatabaseConnection.getInstance(ctx);
     }
 
-    public boolean salvar(String nome, Integer idade, String sexo, String uf, boolean vip){
+    public boolean salvar(String nome, Integer idade, String sexo, String uf, boolean vip) {
         return salvar(0, nome, idade, sexo, uf, vip);
     }
 
-    public boolean salvar(int id, String nome, Integer idade, String sexo, String uf, boolean vip){
+    public boolean salvar(int id, String nome, Integer idade, String sexo, String uf, boolean vip) {
         ContentValues cv = new ContentValues();
         cv.put("Nome", nome);
         cv.put("Idade", idade);
         cv.put("Sexo", sexo);
         cv.put("UF", uf);
         cv.put("Vip", vip ? 1 : 0);
-        if(id > 0)
-            return gw.getDatabase().update(TABLE_CLIENTES, cv, "ID=?", new String[]{ id + "" }) > 0;
+        if (id > 0)
+            return gw.getDatabase().update(TABLE_CLIENTES, cv, "ID=?", new String[]{id + ""}) > 0;
         else
             return gw.getDatabase().insert(TABLE_CLIENTES, null, cv) > 0;
     }
 
-    public List<Cliente> retornarTodos(){
+    public List<Cliente> retornarTodos() {
         List<Cliente> clientes = new ArrayList<>();
         Cursor cursor = gw.getDatabase().rawQuery("SELECT * FROM Clientes", null);
-        while(cursor.moveToNext()){
+        while (cursor.moveToNext()) {
             int id = cursor.getInt(cursor.getColumnIndex("ID"));
             String nome = cursor.getString(cursor.getColumnIndex("Nome"));
             Integer idade = cursor.getInt(cursor.getColumnIndex("Idade"));
@@ -49,9 +49,9 @@ public class ClienteDAO {
         return clientes;
     }
 
-    public Cliente retornarUltimo(){
+    public Cliente retornarUltimo() {
         Cursor cursor = gw.getDatabase().rawQuery("SELECT * FROM Clientes ORDER BY ID DESC", null);
-        if(cursor.moveToFirst()){
+        if (cursor.moveToFirst()) {
             int id = cursor.getInt(cursor.getColumnIndex("ID"));
             String nome = cursor.getString(cursor.getColumnIndex("Nome"));
             Integer idade = cursor.getInt(cursor.getColumnIndex("Idade"));
@@ -64,7 +64,7 @@ public class ClienteDAO {
         return null;
     }
 
-    public boolean excluir(int id){
-        return gw.getDatabase().delete(TABLE_CLIENTES, "ID=?", new String[]{ id + "" }) > 0;
+    public boolean excluir(int id) {
+        return gw.getDatabase().delete(TABLE_CLIENTES, "ID=?", new String[]{id + ""}) > 0;
     }
 }

@@ -3,19 +3,19 @@ package com.esucri.mobile.androidcrud;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
-public class DbGateway {
+public class DatabaseConnection {
 
-    private static DbGateway gw;
+    private static DatabaseConnection gw;
     private SQLiteDatabase db;
 
-    private DbGateway(Context ctx){
+    private DatabaseConnection(Context ctx){
         DbHelper helper = new DbHelper(ctx);
         db = helper.getWritableDatabase();
     }
 
-    public static DbGateway getInstance(Context ctx){
+    public static DatabaseConnection getInstance(Context ctx){
         if(gw == null)
-            gw = new DbGateway(ctx);
+            gw = new DatabaseConnection(ctx);
         return gw;
     }
 
