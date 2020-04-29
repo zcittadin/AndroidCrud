@@ -16,11 +16,11 @@ public class ClienteDAO {
         gw = DatabaseConnection.getInstance(ctx);
     }
 
-    public boolean salvar(String nome, Integer idade, String sexo, String uf, boolean vip) {
-        return salvar(0, nome, idade, sexo, uf, vip);
+    public boolean salvarCliente(String nome, Integer idade, String sexo, String uf, boolean vip) {
+        return salvarCliente(0, nome, idade, sexo, uf, vip);
     }
 
-    public boolean salvar(int id, String nome, Integer idade, String sexo, String uf, boolean vip) {
+    public boolean salvarCliente(int id, String nome, Integer idade, String sexo, String uf, boolean vip) {
         ContentValues cv = new ContentValues();
         cv.put("Nome", nome);
         cv.put("Idade", idade);
@@ -33,7 +33,7 @@ public class ClienteDAO {
             return gw.getDatabase().insert(TABLE_CLIENTES, null, cv) > 0;
     }
 
-    public List<Cliente> retornarTodos() {
+    public List<Cliente> findAll() {
         List<Cliente> clientes = new ArrayList<>();
         Cursor cursor = gw.getDatabase().rawQuery("SELECT * FROM Clientes", null);
         while (cursor.moveToNext()) {
@@ -49,7 +49,7 @@ public class ClienteDAO {
         return clientes;
     }
 
-    public Cliente retornarUltimo() {
+    public Cliente findLast() {
         Cursor cursor = gw.getDatabase().rawQuery("SELECT * FROM Clientes ORDER BY ID DESC", null);
         if (cursor.moveToFirst()) {
             int id = cursor.getInt(cursor.getColumnIndex("ID"));
@@ -64,7 +64,7 @@ public class ClienteDAO {
         return null;
     }
 
-    public boolean excluir(int id) {
+    public boolean removeClente(int id) {
         return gw.getDatabase().delete(TABLE_CLIENTES, "ID=?", new String[]{id + ""}) > 0;
     }
 }

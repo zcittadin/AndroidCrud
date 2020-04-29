@@ -14,8 +14,8 @@ public class ClienteHolder extends RecyclerView.ViewHolder {
 
     public ClienteHolder(View itemView) {
         super(itemView);
-        nomeCliente = (TextView) itemView.findViewById(R.id.nomeCliente);
-        btnEditar = (ImageButton) itemView.findViewById(R.id.btnEdit);
-        btnExcluir = (ImageButton) itemView.findViewById(R.id.btnDelete);
+        nomeCliente = itemView.findViewById(R.id.nomeCliente);
+        btnEditar = itemView.findViewById(R.id.btnEdit);
+        btnExcluir = itemView.findViewById(R.id.btnDelete);
     }
 }

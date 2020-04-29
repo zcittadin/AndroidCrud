@@ -44,6 +44,30 @@ public class Cliente implements Serializable {
         return this.uf;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setIdade(Integer idade) {
+        this.idade = idade;
+    }
+
+    public void setSexo(String sexo) {
+        this.sexo = sexo;
+    }
+
+    public void setUf(String uf) {
+        this.uf = uf;
+    }
+
+    public void setVip(boolean vip) {
+        this.vip = vip;
+    }
+
     @Override
     public boolean equals(Object o) {
         return this.id == ((Cliente) o).id;

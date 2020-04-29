@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -13,11 +12,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 import android.os.Handler;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -38,16 +35,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
-    ClienteAdapter adapter;
+    ClienteAdapter clienteAdapter;
 
     Cliente clienteEditado = null;
 
@@ -63,11 +56,10 @@ public class MainActivity extends AppCompatActivity {
     BluetoothDevice device = null;
     BluetoothSocket socket = null;
 
-    StringBuilder bluetoothBuilder = new StringBuilder();
-    MenuItem bluetoothButton, clockButton, thermoButton;
+    MenuItem bluetoothButton;
     MainActivity.ConnectedThread connectedThread;
     UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
-    Handler messageHandler, requestHandler;
+    Handler messageHandler;
 
 
     @Override
@@ -79,17 +71,16 @@ public class MainActivity extends AppCompatActivity {
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        //verifica se começou agora ou se veio de uma edição
-        Intent intent = getIntent();
+        Intent intent =  getIntent();
         if (intent.hasExtra("cliente")) {
             findViewById(R.id.includemain).setVisibility(View.INVISIBLE);
             findViewById(R.id.includecadastro).setVisibility(View.VISIBLE);
             findViewById(R.id.fab).setVisibility(View.INVISIBLE);
             clienteEditado = (Cliente) intent.getSerializableExtra("cliente");
-            EditText txtNome = (EditText) findViewById(R.id.txtNome);
-            EditText txtIdade = (EditText) findViewById(R.id.txtIdade);
-            Spinner spnEstado = (Spinner) findViewById(R.id.spnEstado);
-            CheckBox chkVip = (CheckBox) findViewById(R.id.chkVip);
+            EditText txtNome = findViewById(R.id.txtNome);
+            EditText txtIdade = findViewById(R.id.txtIdade);
+            Spinner spnEstado = findViewById(R.id.spnEstado);
+            CheckBox chkVip = findViewById(R.id.chkVip);
 
             txtNome.setText(clienteEditado.getNome());
             txtIdade.setText(clienteEditado.getIdade().toString());
@@ -98,18 +89,18 @@ public class MainActivity extends AppCompatActivity {
             if (clienteEditado.getSexo() != null) {
                 RadioButton rb;
                 if (clienteEditado.getSexo().equals("M"))
-                    rb = (RadioButton) findViewById(R.id.rbMasculino);
+                    rb = findViewById(R.id.rbMasculino);
                 else
-                    rb = (RadioButton) findViewById(R.id.rbFeminino);
+                    rb = findViewById(R.id.rbFeminino);
                 rb.setChecked(true);
             }
         } else {
             clienteEditado = null;
-            EditText txtNome = (EditText) findViewById(R.id.txtNome);
-            EditText txtIdade = (EditText) findViewById(R.id.txtIdade);
-            Spinner spnEstado = (Spinner) findViewById(R.id.spnEstado);
-            CheckBox chkVip = (CheckBox) findViewById(R.id.chkVip);
-            RadioButton rb = (RadioButton) findViewById(R.id.rbMasculino);
+            EditText txtNome = findViewById(R.id.txtNome);
+            EditText txtIdade = findViewById(R.id.txtIdade);
+            Spinner spnEstado = findViewById(R.id.spnEstado);
+            CheckBox chkVip = findViewById(R.id.chkVip);
+            RadioButton rb = findViewById(R.id.rbMasculino);
 
             txtNome.setText("");
             txtIdade.setText("");
@@ -120,93 +111,95 @@ public class MainActivity extends AppCompatActivity {
         }
 
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                findViewById(R.id.includemain).setVisibility(View.INVISIBLE);
-                findViewById(R.id.includecadastro).setVisibility(View.VISIBLE);
-                findViewById(R.id.fab).setVisibility(View.INVISIBLE);
+        fab.setOnClickListener(view -> {
+            if (intent.hasExtra("cliente")) {
+                intent.removeExtra("cliente");
             }
+            findViewById(R.id.includemain).setVisibility(View.INVISIBLE);
+            findViewById(R.id.includecadastro).setVisibility(View.VISIBLE);
+            findViewById(R.id.fab).setVisibility(View.INVISIBLE);
         });
 
-        Button btnCancelar = (Button) findViewById(R.id.btnCancelar);
-        btnCancelar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                findViewById(R.id.includemain).setVisibility(View.VISIBLE);
-                findViewById(R.id.includecadastro).setVisibility(View.INVISIBLE);
-                findViewById(R.id.fab).setVisibility(View.VISIBLE);
-                EditText txtNome = (EditText) findViewById(R.id.txtNome);
-                EditText txtIdade = (EditText) findViewById(R.id.txtIdade);
-                Spinner spnEstado = (Spinner) findViewById(R.id.spnEstado);
-                CheckBox chkVip = (CheckBox) findViewById(R.id.chkVip);
-                RadioButton rb = (RadioButton) findViewById(R.id.rbMasculino);
+        Button btnCancelar = findViewById(R.id.btnCancelar);
+        btnCancelar.setOnClickListener(v -> {
+            findViewById(R.id.includemain).setVisibility(View.VISIBLE);
+            findViewById(R.id.includecadastro).setVisibility(View.INVISIBLE);
+            findViewById(R.id.fab).setVisibility(View.VISIBLE);
+            EditText txtNome = findViewById(R.id.txtNome);
+            EditText txtIdade = findViewById(R.id.txtIdade);
+            Spinner spnEstado = findViewById(R.id.spnEstado);
+            CheckBox chkVip = findViewById(R.id.chkVip);
+            RadioButton rb = findViewById(R.id.rbMasculino);
 
-                txtNome.setText("");
-                txtIdade.setText("");
-                chkVip.setChecked(false);
-                spnEstado.setSelection(1);
-                rb.setChecked(true);
-                Intent intent = getIntent();
-                if (intent.hasExtra("cliente")) {
-                    intent.removeExtra("cliente");
-                }
+            txtNome.setText("");
+            txtIdade.setText("");
+            chkVip.setChecked(false);
+            spnEstado.setSelection(0);
+            rb.setChecked(true);
+            if (intent.hasExtra("cliente")) {
+                intent.removeExtra("cliente");
             }
         });
 
         Button btnSalvar = (Button) findViewById(R.id.btnSalvar);
-        btnSalvar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //carregando os campos
-                EditText txtNome = (EditText) findViewById(R.id.txtNome);
-                EditText txtIdade = (EditText) findViewById(R.id.txtIdade);
-                Spinner spnEstado = (Spinner) findViewById(R.id.spnEstado);
-                RadioGroup rgSexo = (RadioGroup) findViewById(R.id.rgSexo);
-                CheckBox chkVip = (CheckBox) findViewById(R.id.chkVip);
+        btnSalvar.setOnClickListener(view -> {
 
-                //pegando os valores
-                String nome = txtNome.getText().toString();
-                Integer idade = new Integer(String.valueOf(txtIdade.getText()));
-                String uf = spnEstado.getSelectedItem().toString();
-                boolean vip = chkVip.isChecked();
-                String sexo = rgSexo.getCheckedRadioButtonId() == R.id.rbMasculino ? "M" : "F";
+            EditText txtNome = findViewById(R.id.txtNome);
+            EditText txtIdade = findViewById(R.id.txtIdade);
+            Spinner spnEstado = findViewById(R.id.spnEstado);
+            RadioGroup rgSexo = findViewById(R.id.rgSexo);
+            CheckBox chkVip = findViewById(R.id.chkVip);
 
-                //salvando os dados
-                ClienteDAO dao = new ClienteDAO(getBaseContext());
-                boolean sucesso;
-                if (clienteEditado != null)
-                    sucesso = dao.salvar(clienteEditado.getId(), nome, idade, sexo, uf, vip);
-                else
-                    sucesso = dao.salvar(nome, idade, sexo, uf, vip);
+            String nome = txtNome.getText().toString();
+            Integer idade = new Integer(String.valueOf(txtIdade.getText()));
+            String uf = spnEstado.getSelectedItem().toString();
+            boolean vip = chkVip.isChecked();
+            String sexo = rgSexo.getCheckedRadioButtonId() == R.id.rbMasculino ? "M" : "F";
 
-                if (sucesso) {
-                    Cliente cliente = dao.retornarUltimo();
-                    if (clienteEditado != null) {
-                        adapter.atualizarCliente(cliente);
-                        clienteEditado = null;
-                    } else
-                        adapter.adicionarCliente(cliente);
-
-                    txtNome.setText("");
-                    txtIdade.setText("");
-                    rgSexo.setSelected(false);
-                    spnEstado.setSelection(0);
-                    chkVip.setChecked(false);
-
-                    Snackbar.make(view, "Cliente salvo com sucesso.", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
-                    findViewById(R.id.includemain).setVisibility(View.VISIBLE);
-                    findViewById(R.id.includecadastro).setVisibility(View.INVISIBLE);
-                    findViewById(R.id.fab).setVisibility(View.VISIBLE);
+            ClienteDAO dao = new ClienteDAO(getBaseContext());
+            boolean sucesso;
+            if (clienteEditado != null) {
+                clienteEditado.setNome(nome);
+                clienteEditado.setIdade(idade);
+                clienteEditado.setSexo(sexo);
+                clienteEditado.setUf(uf);
+                clienteEditado.setVip(vip);
+                sucesso = dao.salvarCliente(clienteEditado.getId(), nome, idade, sexo, uf, vip);
+            }
+            else {
+                sucesso = dao.salvarCliente(nome, idade, sexo, uf, vip);
+            }
+            if (sucesso) {
+                if (clienteEditado != null) {
+                    clienteAdapter.atualizarCliente(clienteEditado);
+                    clienteEditado = null;
                 } else {
-                    Snackbar.make(view, "Erro ao salvar o cliente!", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+                    Cliente newCliente = dao.findLast();
+                    clienteAdapter.adicionarCliente(newCliente);
                 }
+
+                txtNome.setText("");
+                txtIdade.setText("");
+                rgSexo.setSelected(false);
+                spnEstado.setSelection(0);
+                chkVip.setChecked(false);
+
+                if (intent.hasExtra("cliente")) {
+                    intent.removeExtra("cliente");
+                }
+
+                Snackbar.make(view, "Cliente salvo com sucesso.", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+                findViewById(R.id.includemain).setVisibility(View.VISIBLE);
+                findViewById(R.id.includecadastro).setVisibility(View.INVISIBLE);
+                findViewById(R.id.fab).setVisibility(View.VISIBLE);
+            } else {
+                Snackbar.make(view, "Erro ao salvar o cliente!", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
         });
 
-        configurarRecycler();
+        configureRecycler();
     }
 
     @Override
@@ -238,7 +231,6 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         socket.close();
                         isConnected = false;
-                        //requestHandler.removeCallbacks(runnableCode);
                         item.setIcon(R.drawable.ic_bluetooth_disabled_white_24dp);
                         Toast.makeText(getApplicationContext(), "Bluetooth desconectado.", Toast.LENGTH_LONG).show();
                     } catch (IOException ex) {
@@ -312,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void configurarRecycler() {
+    private void configureRecycler() {
         // Configurando o gerenciador de layout para ser uma lista.
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -320,8 +312,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Adiciona o adapter que irá anexar os objetos à lista.
         ClienteDAO dao = new ClienteDAO(this);
-        adapter = new ClienteAdapter(dao.retornarTodos());
-        recyclerView.setAdapter(adapter);
+        clienteAdapter = new ClienteAdapter(dao.findAll());
+        recyclerView.setAdapter(clienteAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
     }
 
@@ -334,13 +326,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return index;
-    }
-
-    public String getCurrentTime() {
-        Calendar cal = Calendar.getInstance();
-        Date date = cal.getTime();
-        DateFormat dateFormat = new SimpleDateFormat("HH:mm");
-        return dateFormat.format(date);
     }
 
     private class ConnectedThread extends Thread {
